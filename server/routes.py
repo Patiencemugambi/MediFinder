@@ -1,6 +1,8 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app as app
 from models import db, Patient, Doctor, Review
 from datetime import datetime
+from flask import redirect, url_for
+
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
@@ -8,9 +10,31 @@ from sqlalchemy.orm import relationship
 
 main = Blueprint('main', __name__)
 
-@main.route('/')
-def index():
-    return "Welcome to MediFinder!"
+from flask import jsonify, url_for
+
+@main.route('/', methods=['GET'])
+def list_endpoints():
+    """GET /
+GET /reviews
+GET /reviews/<int:review_id>
+POST /add_review
+GET /doctors
+GET /doctors/<int:doctor_id>
+POST /add_doctor
+DELETE /doctors/<int:doctor_id>
+PUT /doctors/<int:doctor_id>
+GET /patients
+GET /patients/<int:patient_id>
+POST /create_patient
+PUT /patients/<int:patient_id>
+    """
+    endpoints = []
+    for rule in app.url_map.iter_rules():
+        if rule.endpoint != 'static':  
+            url = url_for(rule.endpoint)
+            endpoints.append(url)
+
+    return jsonify({'endpoints': endpoints})
 
 
 ######################################## REVIEWS ################################
@@ -192,7 +216,7 @@ def get_patient(patient_id):
             'name': patient.name,
             'username': patient.username,
             'email': patient.email,
-            'date_of_birth': patient.date_of_birth.strftime('%Y-%m-%d'),  # format dates as YYYY-MM-DD
+            'date_of_birth': patient.date_of_birth.strftime('%Y-%m-%d'),  # format  YYYY-MM-DD
             'phone_numbers': patient.phone_numbers,
             'address': patient.address,
             'medical_history': patient.medical_history,
@@ -281,7 +305,6 @@ def update_patient(patient_id):
         patient.username = data.get('username', patient.username)
         patient.email = data.get('email', patient.email)
         patient.date_of_birth = datetime.strptime(data.get('date_of_birth'), '%Y-%m-%d').date()
-        # Update other fields as needed based on your data structure
 
         db.session.commit()
         return f'Patient with ID {patient_id} updated successfully', 200
