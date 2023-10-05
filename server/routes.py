@@ -1,5 +1,10 @@
 from flask import Blueprint, jsonify, request
 from models import db, Patient, Doctor, Review
+from datetime import datetime
+
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
+
 
 main = Blueprint('main', __name__)
 
@@ -11,46 +16,46 @@ def index():
 ######################################## REVIEWS ################################
 
 
+# @main.route('/reviews', methods=['GET'])
+# def get_reviews():
+#     reviews = Review.query.all()
+#     review_list = [{'rating': review.rating, 'comment': review.comment} for review in reviews]
+#     return jsonify({'reviews': review_list})
+
 @main.route('/reviews', methods=['GET'])
 def get_reviews():
     reviews = Review.query.all()
-    review_list = [{'rating': review.rating, 'comment': review.comment} for review in reviews]
+    review_list = []
+
+    for review in reviews:
+        
+        patient_name = review.patient.name if review.patient else "Unknown Patient"
+
+        review_info = {
+            'rating': review.rating,
+            'comment': review.comment,
+            'patient_name': patient_name
+        }
+        review_list.append(review_info)
+
     return jsonify({'reviews': review_list})
 
 
-# @main.route('/add_review', methods=['POST'])
-# def add_review():
-#     data = request.get_json()
-#     rating = data.get('rating')
-#     comment = data.get('comment')
-
-#     new_review = Review(rating=rating, comment=comment)
-
-#     try:
-#         db.session.add(new_review)
-#         db.session.commit()
-#         return jsonify({"message": "Review added successfully"}), 201
-#     except Exception as e:
-#         db.session.rollback()
-#         return jsonify({"message": "Failed to add review", "error": str(e)}), 500
 
 @main.route('/add_review', methods=['POST'])
 def add_review():
     data = request.get_json()
     rating = data.get('rating')
     comment = data.get('comment')
-    patient_id = data.get('patient_id')  # Assuming you pass the patient ID in the request
+    patient_id = data.get('patient_id') 
 
-    # Fetch the patient associated with the provided ID
     patient = Patient.query.get(patient_id)
 
     if not patient:
         return jsonify({"message": "Patient not found with the provided ID"}), 404
 
-    # Assuming you have a Review model with appropriate fields
     new_review = Review(rating=rating, comment=comment)
 
-    # Associate the review with the patient
     new_review.patient = patient
 
     try:
@@ -119,7 +124,6 @@ def get_patients():
 
     return jsonify({'patients': patient_list})
 
-from datetime import datetime
 
 @main.route('/create_patient', methods=['POST'])
 def create_patient():
