@@ -14,27 +14,26 @@ from flask import jsonify, url_for
 
 @main.route('/', methods=['GET'])
 def list_endpoints():
-    """GET /
-GET /reviews
-GET /reviews/<int:review_id>
-POST /add_review
-GET /doctors
-GET /doctors/<int:doctor_id>
-POST /add_doctor
-DELETE /doctors/<int:doctor_id>
-PUT /doctors/<int:doctor_id>
-GET /patients
-GET /patients/<int:patient_id>
-POST /create_patient
-PUT /patients/<int:patient_id>
-    """
-    endpoints = []
-    for rule in app.url_map.iter_rules():
-        if rule.endpoint != 'static':  
-            url = url_for(rule.endpoint)
-            endpoints.append(url)
+    """List all available endpoints."""
+    endpoints = {
+        'GET /': url_for('main.list_endpoints', _external=True),
+        'GET /reviews': url_for('main.get_reviews', _external=True),
+        'GET /reviews/<int:review_id>': url_for('main.get_review', review_id=1, _external=True),
+        'POST /add_review': url_for('main.add_review', _external=True),
+        'GET /doctors': url_for('main.get_doctors', _external=True),
+        'GET /doctors/<int:doctor_id>': url_for('main.get_doctor', doctor_id=1, _external=True),
+        'POST /add_doctor': url_for('main.add_doctor', _external=True),
+        'DELETE /doctors/<int:doctor_id>': url_for('main.delete_doctor', doctor_id=1, _external=True),
+        'PUT /doctors/<int:doctor_id>': url_for('main.update_doctor', doctor_id=1, _external=True),
+        'GET /patients': url_for('main.get_patients', _external=True),
+        'GET /patients/<int:patient_id>': url_for('main.get_patient', patient_id=1, _external=True),
+        'POST /create_patient': url_for('main.create_patient', _external=True),
+        'PUT /patients/<int:patient_id>': url_for('main.update_patient', patient_id=1, _external=True)
+    }
 
     return jsonify({'endpoints': endpoints})
+
+
 
 
 ######################################## REVIEWS ################################
