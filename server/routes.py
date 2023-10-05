@@ -39,11 +39,6 @@ def get_patients():
 
     return jsonify({'patients': patient_list})
 
-# @main.route('/reviews')
-# def get_reviews():
-#     reviews = Review.query.all()
-#     return jsonify({'reviews': [{'rating': review.rating, 'comment': review.comment} for review in reviews]})
-
 
 @main.route('/reviews', methods=['GET'])
 def get_reviews():
@@ -58,7 +53,6 @@ def add_review():
     rating = data.get('rating')
     comment = data.get('comment')
 
-    # Assuming you have a Review model with appropriate fields
     new_review = Review(rating=rating, comment=comment)
 
     try:
@@ -104,11 +98,10 @@ def create_patient():
     email = data.get('email')
     password = data.get('password')
 
-    # Convert date_of_birth to a Python date object
+    #  to convert dateofbirth to a Python date object
     date_of_birth_str = data.get('date_of_birth')
     date_of_birth = datetime.strptime(date_of_birth_str, '%Y-%m-%d').date()
 
-    # Rest of the patient information
     phone_numbers = data.get('phone_numbers')
     address = data.get('address')
     medical_history = data.get('medical_history')
@@ -124,7 +117,6 @@ def create_patient():
     allergies = data.get('allergies')
     current_medications = data.get('current_medications')
 
-    # Create a new patient with all the data
     new_patient = Patient(
         name=name,
         username=username,
