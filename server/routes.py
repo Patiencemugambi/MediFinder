@@ -77,6 +77,22 @@ def get_doctors():
     return jsonify({'doctors': doctor_list})
 
 
+@main.route('/doctors/<int:doctor_id>', methods=['GET'])
+def get_doctor(doctor_id):
+    doctor = Doctor.query.get(doctor_id)
+
+    if doctor:
+        doctor_info = {
+            'id': doctor.id,
+            'name': doctor.name,
+            'username': doctor.username,
+            'email': doctor.email
+        }
+        return jsonify({'doctor': doctor_info}), 200
+    else:
+        return 'Doctor not found', 404
+
+
 @main.route('/add_doctor', methods=['POST'])
 def add_doctor():
     data = request.get_json()
