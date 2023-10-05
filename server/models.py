@@ -12,6 +12,7 @@ class Patient(db.Model):
     username = Column(String)
     email = Column(String)
     password = Column(String)
+    role = Column(String, default='patient')  
     date_of_birth = Column(Date)
     phone_numbers = Column(String)
     address = Column(String)
@@ -36,6 +37,8 @@ class Doctor(db.Model):
     username = Column(String)
     email = Column(String)
     password = Column(String)
+    role = Column(String, default='doctor')  
+
 
 
 class Review(db.Model):

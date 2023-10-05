@@ -81,9 +81,38 @@ def get_doctors():
 def add_doctor():
     data = request.get_json()
     new_doctor = Doctor(name=data['name'], username=data['username'], email=data['email'], password=data['password'])
+    new_doctor.role = 'doctor'  
     db.session.add(new_doctor)
     db.session.commit()
     return "Doctor added successfully", 201
+
+
+@main.route('/doctors/<int:doctor_id>', methods=['DELETE'])
+def delete_doctor(doctor_id):
+    doctor = Doctor.query.get(doctor_id)
+    if doctor:
+        db.session.delete(doctor)
+        db.session.commit()
+        return f'Doctor with ID {doctor_id} deleted successfully', 200
+    else:
+        return 'Doctor not found', 404
+
+@main.route('/doctors/<int:doctor_id>', methods=['PUT'])
+def update_doctor(doctor_id):
+    data = request.get_json()
+    doctor = Doctor.query.get(doctor_id)
+
+    if doctor:
+        doctor.name = data.get('name', doctor.name)
+        doctor.username = data.get('username', doctor.username)
+        doctor.email = data.get('email', doctor.email)
+        doctor.password = data.get('password', doctor.password)
+        
+        db.session.commit()
+        return f'Doctor with ID {doctor_id} updated successfully', 200
+    else:
+        return 'Doctor not found', 404
+
 
 ################################PATIENTS #################################
 
@@ -152,6 +181,7 @@ def create_patient():
         username=username,
         email=email,
         password=password,
+        role='patient' ,
         date_of_birth=date_of_birth,
         phone_numbers=phone_numbers,
         address=address,
