@@ -30,16 +30,16 @@ class Patient(db.Model):
 
 
 class Doctor(db.Model):
-    __tablename__ = 'doctor'  # Specify the table name
+    __tablename__ = 'doctor' 
     id = Column(Integer, primary_key=True)
     name = Column(String)
     username = Column(String)
     email = Column(String)
     password = Column(String)
-    
+
 
 class Review(db.Model):
-    __tablename__ = 'review'  # Specify the table name
+    __tablename__ = 'review'  
     id = Column(Integer, primary_key=True)
     rating = Column(Float)
     comment = Column(String)

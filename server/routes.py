@@ -16,19 +16,13 @@ def index():
 ######################################## REVIEWS ################################
 
 
-# @main.route('/reviews', methods=['GET'])
-# def get_reviews():
-#     reviews = Review.query.all()
-#     review_list = [{'rating': review.rating, 'comment': review.comment} for review in reviews]
-#     return jsonify({'reviews': review_list})
-
 @main.route('/reviews', methods=['GET'])
 def get_reviews():
     reviews = Review.query.all()
     review_list = []
 
     for review in reviews:
-        
+
         patient_name = review.patient.name if review.patient else "Unknown Patient"
 
         review_info = {
