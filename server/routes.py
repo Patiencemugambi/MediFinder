@@ -182,6 +182,38 @@ def get_patients():
     return jsonify({'patients': patient_list})
 
 
+@main.route('/patients/<int:patient_id>', methods=['GET'])
+def get_patient(patient_id):
+    patient = Patient.query.get(patient_id)
+
+    if patient:
+        patient_info = {
+            'id': patient.id,
+            'name': patient.name,
+            'username': patient.username,
+            'email': patient.email,
+            'date_of_birth': patient.date_of_birth.strftime('%Y-%m-%d'),  # format dates as YYYY-MM-DD
+            'phone_numbers': patient.phone_numbers,
+            'address': patient.address,
+            'medical_history': patient.medical_history,
+            'emergency_contact_name': patient.emergency_contact_name,
+            'emergency_contact_relationship': patient.emergency_contact_relationship,
+            'emergency_contact_phone': patient.emergency_contact_phone,
+            'insurance_provider': patient.insurance_provider,
+            'policy_number': patient.policy_number,
+            'appointment_history': patient.appointment_history,
+            'notes_comments': patient.notes_comments,
+            'health_goals': patient.health_goals,
+            'preferences': patient.preferences,
+            'allergies': patient.allergies,
+            'current_medications': patient.current_medications
+        }
+        return jsonify({'patient': patient_info}), 200
+    else:
+        return 'Patient not found', 404
+
+
+
 @main.route('/create_patient', methods=['POST'])
 def create_patient():
     data = request.get_json()
@@ -237,3 +269,21 @@ def create_patient():
     db.session.commit()
 
     return f"New patient added successfully with ID: {new_patient.id}", 201
+
+
+@main.route('/patients/<int:patient_id>', methods=['PUT'])
+def update_patient(patient_id):
+    data = request.get_json()
+    patient = Patient.query.get(patient_id)
+
+    if patient:
+        patient.name = data.get('name', patient.name)
+        patient.username = data.get('username', patient.username)
+        patient.email = data.get('email', patient.email)
+        patient.date_of_birth = datetime.strptime(data.get('date_of_birth'), '%Y-%m-%d').date()
+        # Update other fields as needed based on your data structure
+
+        db.session.commit()
+        return f'Patient with ID {patient_id} updated successfully', 200
+    else:
+        return 'Patient not found', 404
