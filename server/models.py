@@ -2,7 +2,10 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, Date, Float, ForeignKey
 from sqlalchemy.orm import relationship
 
+
 db = SQLAlchemy()
+
+
 class Patient(db.Model):
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -26,7 +29,6 @@ class Patient(db.Model):
     current_medications = Column(String)
 
 
-
 class Doctor(db.Model):
     __tablename__ = 'doctor'  # Specify the table name
     id = Column(Integer, primary_key=True)
@@ -34,6 +36,7 @@ class Doctor(db.Model):
     username = Column(String)
     email = Column(String)
     password = Column(String)
+    
 
 class Review(db.Model):
     __tablename__ = 'review'  # Specify the table name

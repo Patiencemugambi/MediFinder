@@ -8,6 +8,86 @@ def index():
     return "Welcome to MediFinder!"
 
 
+######################################## REVIEWS ################################
+
+
+@main.route('/reviews', methods=['GET'])
+def get_reviews():
+    reviews = Review.query.all()
+    review_list = [{'rating': review.rating, 'comment': review.comment} for review in reviews]
+    return jsonify({'reviews': review_list})
+
+
+# @main.route('/add_review', methods=['POST'])
+# def add_review():
+#     data = request.get_json()
+#     rating = data.get('rating')
+#     comment = data.get('comment')
+
+#     new_review = Review(rating=rating, comment=comment)
+
+#     try:
+#         db.session.add(new_review)
+#         db.session.commit()
+#         return jsonify({"message": "Review added successfully"}), 201
+#     except Exception as e:
+#         db.session.rollback()
+#         return jsonify({"message": "Failed to add review", "error": str(e)}), 500
+
+@main.route('/add_review', methods=['POST'])
+def add_review():
+    data = request.get_json()
+    rating = data.get('rating')
+    comment = data.get('comment')
+    patient_id = data.get('patient_id')  # Assuming you pass the patient ID in the request
+
+    # Fetch the patient associated with the provided ID
+    patient = Patient.query.get(patient_id)
+
+    if not patient:
+        return jsonify({"message": "Patient not found with the provided ID"}), 404
+
+    # Assuming you have a Review model with appropriate fields
+    new_review = Review(rating=rating, comment=comment)
+
+    # Associate the review with the patient
+    new_review.patient = patient
+
+    try:
+        db.session.add(new_review)
+        db.session.commit()
+        return jsonify({"message": "Review added successfully"}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Failed to add review", "error": str(e)}), 500
+
+################################ DOCTORS #################################
+
+@main.route('/doctors', methods=['GET'])
+def get_doctors():
+    doctors = Doctor.query.all()
+    doctor_list = []
+    for doctor in doctors:
+        doctor_info = {
+            'id': doctor.id,
+            'name': doctor.name,
+            'username': doctor.username,
+            'email': doctor.email
+        }
+        doctor_list.append(doctor_info)
+    return jsonify({'doctors': doctor_list})
+
+
+@main.route('/add_doctor', methods=['POST'])
+def add_doctor():
+    data = request.get_json()
+    new_doctor = Doctor(name=data['name'], username=data['username'], email=data['email'], password=data['password'])
+    db.session.add(new_doctor)
+    db.session.commit()
+    return "Doctor added successfully", 201
+
+################################PATIENTS #################################
+
 @main.route('/patients', methods=['GET'])
 def get_patients():
     patients = Patient.query.all()
@@ -38,54 +118,6 @@ def get_patients():
         patient_list.append(patient_info)
 
     return jsonify({'patients': patient_list})
-
-
-@main.route('/reviews', methods=['GET'])
-def get_reviews():
-    reviews = Review.query.all()
-    review_list = [{'rating': review.rating, 'comment': review.comment} for review in reviews]
-    return jsonify({'reviews': review_list})
-
-
-@main.route('/add_review', methods=['POST'])
-def add_review():
-    data = request.get_json()
-    rating = data.get('rating')
-    comment = data.get('comment')
-
-    new_review = Review(rating=rating, comment=comment)
-
-    try:
-        db.session.add(new_review)
-        db.session.commit()
-        return jsonify({"message": "Review added successfully"}), 201
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"message": "Failed to add review", "error": str(e)}), 500
-
-
-@main.route('/doctors', methods=['GET'])
-def get_doctors():
-    doctors = Doctor.query.all()
-    doctor_list = []
-    for doctor in doctors:
-        doctor_info = {
-            'id': doctor.id,
-            'name': doctor.name,
-            'username': doctor.username,
-            'email': doctor.email
-        }
-        doctor_list.append(doctor_info)
-    return jsonify({'doctors': doctor_list})
-
-
-@main.route('/add_doctor', methods=['POST'])
-def add_doctor():
-    data = request.get_json()
-    new_doctor = Doctor(name=data['name'], username=data['username'], email=data['email'], password=data['password'])
-    db.session.add(new_doctor)
-    db.session.commit()
-    return "Doctor added successfully", 201
 
 from datetime import datetime
 
