@@ -35,6 +35,24 @@ def get_reviews():
     return jsonify({'reviews': review_list})
 
 
+@main.route('/reviews/<int:review_id>', methods=['GET'])
+def get_review(review_id):
+    review = Review.query.get(review_id)
+
+    if review:
+        patient_name = review.patient.name if review.patient else "Unknown Patient"
+
+        review_info = {
+            'rating': review.rating,
+            'comment': review.comment,
+            'patient_name': patient_name
+        }
+        return jsonify({'review': review_info}), 200
+    else:
+        return 'Review not found', 404
+
+
+
 
 @main.route('/add_review', methods=['POST'])
 def add_review():
